@@ -1,19 +1,40 @@
-# 🍽️ Ne Yesem? - Akıllı Gastronomi Asistanı
-
-Kararsız kullanıcılar için geliştirilmiş, akıllı filtreleme sistemine sahip bir mobil gastronomi asistanıdır. Kullanıcının ruh haline, diyet tercihlerine ve sağlık hassasiyetlerine (alerjenler) göre en uygun yemek-içecek eşleşmesini sunar.
-
-## ✨ Öne Çıkan Teknik Özellikler
-
-* **🎯 Akıllı Filtreleme (Smart Filter Logic):** Uygulama sadece rastgele bir seçim yapmaz. Seçilen kategori (Acı, Hafif, Vejetaryen vb.) ile kullanıcının belirttiği alerjenleri (Gluten, Şeker, Süt vb.) çapraz sorgulayarak kişiye özel güvenli bir liste oluşturur.
-* **🥤 Gurme Eşleştirme (Data Mapping):** Her yemek, kendi karakterine en uygun içecekle (Örn: Adana Kebap - Acılı Şalgam, Fit Puding - Bitki Çayı) eşleştirilmiştir.
-* **🍬 Şeker Hassasiyeti Algoritması:** "Tatlı" kategorisinde "Şeker" alerjisi/tercihi seçildiğinde, sistem otomatik olarak şekerli ürünleri eleyip meyve ve doğal içerikli "fit" alternatifleri sunar.
-* **📱 Kullanıcı Odaklı Tasarım (UI/UX):** Flutter'ın `Wrap` ve `ChoiceChip` mimarisi kullanılarak, tüm seçeneklerin tek bir panelde, kaydırma gerektirmeden görülmesini sağlayan responsive bir arayüz sunulmuştur.
-
-## 🛠️ Kullanılan Teknolojiler & Mimari
-
-* **Dil/Framework:** Flutter & Dart
-* **Algoritma:** Çok kriterli filtreleme ve "Last Result Tracking" (Üst üste aynı sonucun gelmesini engelleme mantığı).
-* **Veri Yapısı:** Temiz kod (Clean Code) prensiplerine uygun, genişletilebilir Map yapıları.
+# 🍽️ BiteWise: Ne Yesem?
+> **Karar yorgunluğuna son veren, akıllı ve duyarlı gastronomi asistanı.**
 
 ---
-> **Not:** Bu proje, **UPSchool & Future Talent** programı teknik bitirme projesi kapsamında, kullanıcı deneyimini ve algoritmik filtrelemeyi ön plana çıkarmak amacıyla geliştirilmiştir.
+
+## 🎯 1. Ürün Vizyonu & Problem Tanımı
+
+* **Problem:** İnsanlar her gün tekrarlanan "Ne yesem?" kararsızlığıyla zaman kaybeder. Mevcut uygulamalar genellikle reklam odaklıdır ve kullanıcının sağlık hassasiyetlerini (alerjenler) yok sayar.
+* **Çözüm:** Kullanıcının ruh haline ve diyet tercihlerine göre saniyeler içinde "hızlı rahatlama" sağlayan net bir öneri sunmak.
+* **Girişimci Refleksi:** Bu proje, sadece bir fikir değil; günlük hayattaki bir aksaklığa odaklanan "problem radarı" sonucudur.
+
+---
+
+## ✨ 2. Öne Çıkan Özellikler (MVP Kapsamı)
+
+Uygulamanın temelini oluşturan ve kullanıcı deneyimini önceliklendiren özellikler:
+
+| Özellik | Açıklama |
+| :--- | :--- |
+| **🎯 Akıllı Filtreleme** | Seçilen kategori ile alerjenleri çapraz sorgulayarak güvenli liste oluşturur. |
+| **🥤 Gurme Eşleştirme** | Her yemeğe özel karakterize edilmiş içecek önerisi sunar (Örn: Kebap - Şalgam). |
+| **🍬 Şeker Algoritması** | Şeker hassasiyeti seçildiğinde otomatik olarak doğal ve "fit" alternatifleri sunar. |
+| **🔄 Tekrar Engelleme** | Üst üste aynı sonucun gelmesini önleyerek her seferinde taze bir öneri sunar. |
+
+---
+
+## 🛠️ 3. Teknik Mimari & Tasarım
+
+* **Minimalizm:** Karmaşıklıktan uzak, tek ekranda çözüm sunan arayüz. "İyi ürün, çıkarılan özellik sayısı ile ölçülür" prensibiyle tasarlanmıştır.
+* **Teknoloji:** Flutter & Dart kullanılarak responsive (duyarlı) ve modern bir yapı kurulmuştur.
+* **Kullanıcı Hikayesi:** "Bir kullanıcı olarak güvenli ve hızlı yemek seçmek istiyorum çünkü kararsız kalarak vaktimi boşa harcamak istemiyorum."
+
+---
+
+## 📈 4. Pazar Analizi & Gelecek (Roadmap)
+
+* **Pazar İçgörüsü:** Benzer uygulamaların pazar başarısı, bu alanda güçlü bir kullanıcı talebi olduğunu doğrulamaktadır.
+* **Gelecek Planı (V2):** Kullanıcının kendi restoran listelerini ekleyebilmesi ve kişisel favori kayıtlarını tutabilmesi.
+
+---
