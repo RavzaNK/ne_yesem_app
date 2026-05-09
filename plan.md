@@ -1,20 +1,11 @@
-# 📂 Proje Geliştirme Yol Haritası (plan.md)
+# 📂 Geliştirme Yol Haritası (plan.md)
 
-Bu dosya, BiteWise uygulamasının MVP (Minimum Uygulanabilir Ürün) geliştirme aşamalarını ve mimari kararlarını içerir.
+## ✅ Tamamlanan Aşamalar (Frontend & Design)
+- [x] **Design System:** Uygulama genelinde `ThemeData` ile merkezi stil yönetimi sağlandı.
+- [x] **Navigation:** `Navigator` API kullanılarak çok sayfalı (Multi-page) yapıya geçildi.
+- [x] **UI Elements:** Kategori ve Alerjen listeleri için dinamik `ListView` ve `Wrap` yapıları kuruldu.
+- [x] **UX Polish:** Marka kimliği güçlendirildi ve "Mock Data ile Akıllı Seçimler" vizyonu tamamlandı.
 
-## 🛠️ Faz 1: Altyapı ve Hazırlık
-- [x] **Frontend Kurulumu:** Flutter SDK yapılandırması ve Material 3 tema entegrasyonu.
-- [x] **Mimari Karar:** Veri yönetiminin UI dosyasından ayrılması (Separation of Concerns).
-
-## 🎯 Faz 2: Veri ve Algoritma Geliştirme
-- [x] **Veri Katmanı:** `data.dart` üzerinden asenkron çalışmaya uygun Map tabanlı veri tabanı kurgusu.
-- [x] **Filtreleme Logic:** Alerjenlerin listeden çıkarılması ve kategori bazlı eşleşme algoritması.
-- [x] **Şeker Algoritması:** Şeker tercihiyle tetiklenen "fit tatlı" çapraz sorgu mantığı.
-
-## 🎨 Faz 3: Kullanıcı Deneyimi ve Arayüz
-- [x] **Dinamik Seçim:** `ChoiceChip` ve `FilterChip` bileşenleriyle responsive panel tasarımı.
-- [x] **Animasyon:** Karar verme sürecini simüle eden Timer tabanlı görsel geçişler.
-
-## 🚀 Faz 4: Final ve Dokümantasyon
-- [x] **Test:** Sonuçların tutarlılığı ve tekrar engelleme mekanizmasının kontrolü.
-- [x] **Dokümantasyon:** README ve plan.md dosyalarının profesyonel standartlara getirilmesi.
+## ⏳ Gelecek Aşamalar (Backend Hazırlığı)
+- [ ] **Data Integration:** Mevcut Mock-Data yapısının gerçek bir API/Firebase servisine bağlanması.
+- [ ] **State Management:** Veri akışının profesyonel bir state management (Provider/Bloc) yapısına taşınması.
