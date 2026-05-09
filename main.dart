@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'data.dart'; // Az önce oluşturduğumuz veri dosyasını içeri aktarıyoruz
+import 'data.dart'; 
 
 void main() => runApp(const BiteWiseApp());
 
 class BiteWiseApp extends StatelessWidget {
   const BiteWiseApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,8 +16,9 @@ class BiteWiseApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
-          surface: const Color(0xFFFFF9F5),
+          seedColor: Colors.deepOrange,
+          primary: Colors.deepOrange,
+          surface: const Color(0xFFFDFDFD),
         ),
       ),
       home: const HomePage(),
@@ -25,34 +26,64 @@ class BiteWiseApp extends StatelessWidget {
   }
 }
 
+class AboutPage extends StatelessWidget {
+  const AboutPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("BiteWise Hakkında"), centerTitle: true),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          children: [
+            const CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.orangeAccent,
+              child: Icon(Icons.info_outline, size: 50, color: Colors.white),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              "Karar Vermek Artık Daha Lezzetli!",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "BiteWise, yemek seçimi yaparken yaşanan kararsızlığı ortadan kaldırmak için geliştirilmiştir. "
+              "Alerjen filtreleri ve kategori seçimleriyle size en uygun menüyü saniyeler içinde sunar.",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+            const Spacer(),
+            const Text("Versiyon 1.0.0 - Mock Data Modu", style: TextStyle(color: Colors.grey)),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-  
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  // Veriyi data.dart içindeki FoodData sınıfından çekiyoruz
-  final Map<String, Map<String, dynamic>> _foodDatabase = FoodData.database;
-
+  final Map<String, Map<String, dynamic>> _foodDatabase = FoodData.database; 
   String _currentFood = "Karar Veremedin mi?";
   String _currentDrink = "";
-  String _lastResult = "";
   bool _isSpinning = false;
   String _selectedCategory = "Hepsi";
   final List<String> _excludedIngredients = [];
 
   void _spinTheWheel() {
     List<String> availableFoods = _foodDatabase.keys.where((food) {
-      bool categoryMatch = (_selectedCategory == "Hepsi" || 
-          _foodDatabase[food]!['cat'] == _selectedCategory);
-      
+      bool categoryMatch = (_selectedCategory == "Hepsi" || _foodDatabase[food]!['cat'] == _selectedCategory);
       List<dynamic> foodIngs = _foodDatabase[food]!['ings'];
-      bool hasExcludedIngredient = foodIngs.any(
-        (ing) => _excludedIngredients.contains(ing),
-      );
-
+      bool hasExcludedIngredient = foodIngs.any((ing) => _excludedIngredients.contains(ing));
       return categoryMatch && !hasExcludedIngredient;
     }).toList();
 
@@ -63,28 +94,20 @@ class _HomePageState extends State<HomePage> {
       });
       return;
     }
-    
-    if (availableFoods.length > 1) {
-      availableFoods.remove(_lastResult);
-    }
 
-    setState(() {
-      _isSpinning = true;
-      _currentDrink = "";
-    });
+    setState(() => _isSpinning = true);
 
     int counter = 0;
-    Timer.periodic(const Duration(milliseconds: 100), (timer) {
+    Timer.periodic(const Duration(milliseconds: 80), (timer) {
       setState(() {
         _currentFood = availableFoods[Random().nextInt(availableFoods.length)];
       });
       counter++;
-      if (counter > 15) {
+      if (counter > 20) {
         timer.cancel();
         setState(() {
           _isSpinning = false;
-          _lastResult = _currentFood;
-          _currentDrink = "Eşleşen İçecek: ${_foodDatabase[_currentFood]!['drink']} 🥤";
+          _currentDrink = "Günün Eşleşmesi: ${_foodDatabase[_currentFood]!['drink']} 🥤";
         });
       }
     });
@@ -93,12 +116,26 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline, color: Colors.orange),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AboutPage()),
+            ),
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFFFFF9F5), Colors.white],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Colors.orange.shade50, Colors.white, Colors.orange.shade50],
           ),
         ),
         child: SafeArea(
@@ -107,63 +144,21 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
-                const Center(
-                  child: Text(
-                    "BiteWise",
-                    style: TextStyle(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.orange,
-                    ),
-                  ),
-                ),
-                _buildHeader("Kategori Seçimi", Icons.restaurant_menu),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: ["Hepsi", "🔥 Acı", "🌿 Vejetaryen", "🥗 Hafif", "🍰 Tatlı"].map((cat) {
-                    return ChoiceChip(
-                      label: Text(cat),
-                      selected: _selectedCategory == cat,
-                      onSelected: (val) => setState(() => _selectedCategory = cat),
-                      selectedColor: Colors.orange,
-                      labelStyle: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: _selectedCategory == cat ? Colors.white : Colors.black87,
-                      ),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      showCheckmark: false,
-                    );
-                  }).toList(),
-                ),
-                _buildHeader("Alerjenler", Icons.warning_amber_rounded),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: {
-                    'gluten': '🍞 Gluten',
-                    'süt': '🥛 Süt',
-                    'et': '🥩 Et',
-                    'şeker': '🍬 Şeker',
-                    'balık': '🐟 Balık',
-                  }.entries.map((entry) {
-                    return FilterChip(
-                      label: Text(entry.value),
-                      selected: _excludedIngredients.contains(entry.key),
-                      onSelected: (val) => setState(() {
-                        val ? _excludedIngredients.add(entry.key) : _excludedIngredients.remove(entry.key);
-                      }),
-                      selectedColor: Colors.orange.withValues(alpha: 0.2),
-                      checkmarkColor: Colors.orange,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    );
-                  }).toList(),
-                ),
+                Center(child: _buildHeader()),
+                const SizedBox(height: 40), // Üst boşluğu biraz artırdık
+                
+                _buildSectionHeader("Kategori Seçimi", Icons.restaurant_menu),
+                _buildCategoryList(),
+                
+                const SizedBox(height: 25),
+                
+                _buildSectionHeader("Alerjen Filtresi", Icons.warning_amber_rounded),
+                _buildAllergenList(),
+                
                 const Spacer(),
                 _buildResultCard(),
                 const Spacer(),
-                _buildActionButton(),
+                _buildPremiumButton(),
                 const SizedBox(height: 20),
               ],
             ),
@@ -173,34 +168,103 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildHeader(String title, IconData icon) {
+  // --- GÜNCELLENEN BAŞLIK ALANI (Sadece İkon ve İsim) ---
+  Widget _buildHeader() {
+    return const Column(
+      children: [
+        Icon(Icons.restaurant_menu_rounded, color: Colors.orange, size: 55),
+        SizedBox(height: 12),
+        Text(
+          "BiteWise", 
+          style: TextStyle(
+            fontSize: 40, // Biraz daha büyüttük
+            fontWeight: FontWeight.w900, 
+            color: Colors.black87,
+            letterSpacing: -0.5
+          )
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionHeader(String title, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 20),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
           Icon(icon, size: 20, color: Colors.orange.shade900),
           const SizedBox(width: 8),
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          Text(
+            title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black87),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCategoryList() {
+    final categories = ["Hepsi", "🔥 Acı", "🌿 Vejetaryen", "🥗 Hafif", "🍰 Tatlı"];
+    return SizedBox(
+      height: 50,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final cat = categories[index];
+          return Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: ChoiceChip(
+              label: Text(cat),
+              selected: _selectedCategory == cat,
+              onSelected: (_) => setState(() => _selectedCategory = cat),
+              selectedColor: Colors.orange,
+              labelStyle: TextStyle(
+                color: _selectedCategory == cat ? Colors.white : Colors.orange,
+                fontWeight: FontWeight.bold,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              showCheckmark: false,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildAllergenList() {
+    final allergens = {'gluten': '🍞 Gluten', 'süt': '🥛 Süt', 'et': '🥩 Et', 'şeker': '🍬 Şeker'};
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: allergens.entries.map((entry) {
+        final isSelected = _excludedIngredients.contains(entry.key);
+        return FilterChip(
+          label: Text(entry.value),
+          selected: isSelected,
+          onSelected: (val) => setState(() => val ? _excludedIngredients.add(entry.key) : _excludedIngredients.remove(entry.key)),
+          selectedColor: Colors.orange.withOpacity(0.2),
+          checkmarkColor: Colors.orange,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        );
+      }).toList(),
     );
   }
 
   Widget _buildResultCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(30),
+      padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
-            color: Colors.orange.withValues(alpha: 0.1),
-            blurRadius: 40,
+            color: Colors.orange.withOpacity(0.15),
+            blurRadius: 30,
             offset: const Offset(0, 10),
           )
         ],
-        border: Border.all(color: Colors.orange.withValues(alpha: 0.1), width: 1.5),
       ),
       child: Column(
         children: [
@@ -208,17 +272,16 @@ class _HomePageState extends State<HomePage> {
             _currentFood,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
-              color: _isSpinning ? Colors.grey : Colors.orange.shade900,
+              fontSize: 30, 
+              fontWeight: FontWeight.w900, 
+              color: Colors.orange.shade900
             ),
           ),
           if (!_isSpinning && _currentDrink.isNotEmpty) ...[
-            const Padding(padding: EdgeInsets.symmetric(vertical: 15), child: Divider()),
+            const Divider(height: 40),
             Text(
-              _currentDrink,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              _currentDrink, 
+              style: const TextStyle(fontSize: 18, color: Colors.blueGrey, fontWeight: FontWeight.w600)
             ),
           ],
         ],
@@ -226,18 +289,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildPremiumButton() {
     return ElevatedButton(
       onPressed: _isSpinning ? null : _spinTheWheel,
       style: ElevatedButton.styleFrom(
-        minimumSize: const Size(double.infinity, 70),
+        minimumSize: const Size(double.infinity, 75),
         backgroundColor: Colors.orange,
-        foregroundColor: Colors.white,
+        elevation: 5,
+        shadowColor: Colors.orange.withOpacity(0.4),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       child: const Text(
-        "🍀 Şansımı Dene",
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        "🍔 Şansımı Dene", 
+        style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold)
       ),
     );
   }
