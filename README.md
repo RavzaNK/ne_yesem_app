@@ -1,22 +1,17 @@
-# 🍽️ BiteWise: Ne Yesem?
+# 🍽️ BiteWise: Profesyonel Gastronomi Asistanı
 
-Karar yorgunluğuna son veren, akıllı filtreleme sistemine sahip profesyonel bir gastronomi asistanıdır.
+Karar yorgunluğunu ortadan kaldıran, modern tasarım prensipleriyle (Design System) geliştirilmiş akıllı yemek seçim uygulaması.
 
-## 🎯 Ürün Vizyonu
-BiteWise, sadece rastgele yemek seçimi yapmaz; kullanıcının sağlık hassasiyetlerini (alerjenler) ve o anki ruh halini (kategoriler) analiz ederek saniyeler içinde "güvenli" bir öneri sunar.
+## 🌟 Neler Yeni?
+* **🎨 Modern Design System:** Uygulama genelinde tutarlı renk paleti, tipografi ve bileşen (Component) yapısı kuruldu.
+* **📱 Multi-Page Navigation:** Uygulama tek ekranlı bir demo olmaktan çıkarılıp, navigasyon yapısı içeren profesyonel bir yapıya dönüştürüldü.
+* **ℹ️ About Page:** Kullanıcı deneyimini artırmak için yeni bir "Hakkında" sayfası eklendi.
+* **✨ Animated UI:** Sonuçların gösteriminde daha akıcı bir kullanıcı deneyimi için mikro animasyonlar entegre edildi.
 
-## ✨ Öne Çıkan Özellikler
-* **🎯 Akıllı Filtreleme:** Seçilen kategori ile alerjenleri çapraz sorgulayarak kişiye özel liste oluşturur.
-* **🍬 Şeker Hassasiyeti:** Tatlı kategorisinde "Şeker" alerjisi seçildiğinde otomatik olarak "fit" ve doğal içerikli alternatifleri sunar.
-* **🥤 Gurme Eşleştirme:** Her yemeğe özel karakterize edilmiş içecek önerisi sağlar.
-* **🔄 Tekrar Engelleme:** Üst üste aynı sonucun gelmesini engelleyen mantıksal kontrol mekanizması içerir.
-
-## 🛠️ Teknik Mimari
-* **Modüler Yapı:** Proje, Frontend (`main.dart`) ve Backend/Data (`data.dart`) katmanlarının ayrıldığı modüler bir mimariyle geliştirilmiştir.
-* **Teknoloji Stack:** Flutter & Dart.
-* **Modern UI:** Material 3 standartlarında, responsive ve kullanıcı odaklı arayüz.
+## 🛠️ Teknik Altyapı
+* **Frontend:** Flutter & Material 3 (Custom Theme)
+* **Data Katmanı:** `data.dart` üzerinden Mock-Data servis yapısı.
+* **Mimari:** Separation of Concerns (Sorumlulukların Ayrılması) prensibiyle geliştirildi.
 
 ---
-*Bu proje UPSchool & Future Talent programı teknik bitirme projesi olarak geliştirilmiştir.*
-
----
+*Bu proje UPSchool & Future Talent programı kapsamında geliştirilmiştir.*
