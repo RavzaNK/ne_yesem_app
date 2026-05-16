@@ -1,17 +1,13 @@
-# 🍽️ BiteWise: Profesyonel Gastronomi Asistanı
+# 🍽️ BiteWise: AI Destekli Gastronomi Asistanı
 
-Karar yorgunluğunu ortadan kaldıran, modern tasarım prensipleriyle (Design System) geliştirilmiş akıllı yemek seçim uygulaması.
+Karar yorgunluğunu ortadan kaldıran ve kullanıcı beslenme alışkanlıklarına farkındalık kazandıran, yerel backend servis mimarisiyle güçlendirilmiş akıllı yemek seçim uygulaması.
 
-## 🌟 Neler Yeni?
-* **🎨 Modern Design System:** Uygulama genelinde tutarlı renk paleti, tipografi ve bileşen (Component) yapısı kuruldu.
-* **📱 Multi-Page Navigation:** Uygulama tek ekranlı bir demo olmaktan çıkarılıp, navigasyon yapısı içeren profesyonel bir yapıya dönüştürüldü.
-* **ℹ️ About Page:** Kullanıcı deneyimini artırmak için yeni bir "Hakkında" sayfası eklendi.
-* **✨ Animated UI:** Sonuçların gösteriminde daha akıcı bir kullanıcı deneyimi için mikro animasyonlar entegre edildi.
+## 🌟 Öne Çıkan Özellikler
+* **🔑 Kullanıcı Girişi & Misafir Modu:** Kullanıcıyı ismiyle tanır veya anonim misafir deneyimi sunar.
+* **📦 Stateful In-Memory Backend:** Seçim verilerini çalışma zamanında (In-Memory) güvenli bir şekilde hafızada saklar.
+* **🧠 Kural Tabanlı Yapay Zeka (AI Engine Simülasyonu):** Kullanıcının geçmiş beslenme örüntülerini analiz ederek şeker dengesi, ağır/baharatlı tüketimi gibi konularda kişiselleştirilmiş farkındalık uyarısı veya tebrik raporu üretir.
 
-## 🛠️ Teknik Altyapı
-* **Frontend:** Flutter & Material 3 (Custom Theme)
-* **Data Katmanı:** `data.dart` üzerinden Mock-Data servis yapısı.
-* **Mimari:** Separation of Concerns (Sorumlulukların Ayrılması) prensibiyle geliştirildi.
-
----
-*Bu proje UPSchool & Future Talent programı kapsamında geliştirilmiştir.*
+## 🛠️ Teknik Mimari
+* **Frontend:** Flutter & Material 3 (Custom Theme & Navigation)
+* **Backend:** In-Memory Veri Servis Yapısı (`backend_service.dart`)
+* **Veri Katmanı:** `models.dart` ve `data.dart` (Gelişmiş Mock veri tabanı)
