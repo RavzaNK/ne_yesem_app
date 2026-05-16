@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'data.dart'; 
+import 'data.dart';
+import 'backend_service.dart';
+import 'models.dart';
 
 void main() => runApp(const BiteWiseApp());
 
@@ -21,50 +23,84 @@ class BiteWiseApp extends StatelessWidget {
           surface: const Color(0xFFFDFDFD),
         ),
       ),
-      home: const HomePage(),
+      home: const LoginSelectionPage(), // İlk açılış ekranı değişti
     );
   }
 }
 
-class AboutPage extends StatelessWidget {
-  const AboutPage({super.key});
+// --- 1. YENİ EKRAN: GİRİŞ VE MİSAFİR SEÇİM SAYFASI ---
+class LoginSelectionPage extends StatefulWidget {
+  const LoginSelectionPage({super.key});
+
+  @override
+  State<LoginSelectionPage> createState() => _LoginSelectionPageState();
+}
+
+class _LoginSelectionPageState extends State<LoginSelectionPage> {
+  final TextEditingController _nameController = TextEditingController();
+  final BackendService _backend = BackendService();
+
+  void _submitLogin() {
+    if (_nameController.text.trim().isNotEmpty) {
+      _backend.loginAsUser(_nameController.text.trim());
+      _navigateToHome();
+    }
+  }
+
+  void _navigateToHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomePage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("BiteWise Hakkında"), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.orangeAccent,
-              child: Icon(Icons.info_outline, size: 50, color: Colors.white),
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              "Karar Vermek Artık Daha Lezzetli!",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              "BiteWise, yemek seçimi yaparken yaşanan kararsızlığı ortadan kaldırmak için geliştirilmiştir. "
-              "Alerjen filtreleri ve kategori seçimleriyle size en uygun menüyü saniyeler içinde sunar.",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.black54),
-            ),
-            const Spacer(),
-            const Text("Versiyon 1.0.0 - Mock Data Modu", style: TextStyle(color: Colors.grey)),
-            const SizedBox(height: 10),
-          ],
+      body: Container(
+        decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.orange.shade100, Colors.white])),
+        child: Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.restaurant_menu_rounded, size: 80, color: Colors.orange),
+              const SizedBox(height: 16),
+              const Text("BiteWise'a Hoş Geldin", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              const Text("AI Destekli Akıllı Gastronomi Rehberi", style: TextStyle(color: Colors.black54)),
+              const SizedBox(height: 40),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'İsminiz nedir?',
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
+                  prefixIcon: const Icon(Icons.person),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _submitLogin,
+                style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 55), backgroundColor: Colors.orange),
+                child: const Text("Kayıtlı Kullanıcı Olarak Gir", style: TextStyle(color: Colors.white, fontSize: 16)),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                onPressed: () {
+                  _backend.loginAsGuest();
+                  _navigateToHome();
+                },
+                child: const Text("Misafir Kullanıcı Olarak Devam Et", style: TextStyle(fontSize: 16, color: Colors.deepOrange)),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
+// --- 2. EKRAN: ANA SAYFA (Güncellendi) ---
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
@@ -72,12 +108,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final Map<String, Map<String, dynamic>> _foodDatabase = FoodData.database; 
+  final Map<String, Map<String, dynamic>> _foodDatabase = FoodData.database;
+  final BackendService _backend = BackendService();
+  
   String _currentFood = "Karar Veremedin mi?";
   String _currentDrink = "";
   bool _isSpinning = false;
   String _selectedCategory = "Hepsi";
   final List<String> _excludedIngredients = [];
+  UserProfile? user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = _backend.getCurrentUser(); // Giriş yapan kullanıcıyı backend'den alıyoruz
+  }
 
   void _spinTheWheel() {
     List<String> availableFoods = _foodDatabase.keys.where((food) {
@@ -108,53 +153,65 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           _isSpinning = false;
           _currentDrink = "Günün Eşleşmesi: ${_foodDatabase[_currentFood]!['drink']} 🥤";
+          
+          // VERİYİ BACKEND'E KAYDEDİYORUZ
+          _backend.saveFoodToHistory(_currentFood);
         });
       }
     });
+  }
+
+  // AI Farkındalık Pop-up penceresi
+  void _showAIReport() {
+    var aiResult = _backend.getAIFeedback();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [Icon(Icons.psychology, color: Colors.orange), SizedBox(width: 10), Text("AI Farkındalık Raporu")],
+        ),
+        content: Text(aiResult['message'], style: const TextStyle(fontSize: 16)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Tamam"))
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+        title: Text("Merhaba, ${user?.username ?? 'Ziyaretçi'}", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.help_outline, color: Colors.orange),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const AboutPage()),
-            ),
+            icon: const Icon(Icons.analytics_outlined, color: Colors.deepOrange),
+            tooltip: 'AI Analizi',
+            onPressed: _showAIReport, // Sizin istediğiniz istatistik butonu!
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.grey),
+            onPressed: () {
+              _backend.logout();
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginSelectionPage()));
+            },
           ),
         ],
       ),
-      extendBodyBehindAppBar: true,
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.orange.shade50, Colors.white, Colors.orange.shade50],
-          ),
-        ),
+        decoration: BoxDecoration(gradient: LinearGradient(colors: [Colors.orange.shade50, Colors.white])),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(child: _buildHeader()),
-                const SizedBox(height: 40), // Üst boşluğu biraz artırdık
-                
+                const SizedBox(height: 10),
                 _buildSectionHeader("Kategori Seçimi", Icons.restaurant_menu),
                 _buildCategoryList(),
-                
-                const SizedBox(height: 25),
-                
+                const SizedBox(height: 20),
                 _buildSectionHeader("Alerjen Filtresi", Icons.warning_amber_rounded),
                 _buildAllergenList(),
-                
                 const Spacer(),
                 _buildResultCard(),
                 const Spacer(),
@@ -168,38 +225,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // --- GÜNCELLENEN BAŞLIK ALANI (Sadece İkon ve İsim) ---
-  Widget _buildHeader() {
-    return const Column(
-      children: [
-        Icon(Icons.restaurant_menu_rounded, color: Colors.orange, size: 55),
-        SizedBox(height: 12),
-        Text(
-          "BiteWise", 
-          style: TextStyle(
-            fontSize: 40, // Biraz daha büyüttük
-            fontWeight: FontWeight.w900, 
-            color: Colors.black87,
-            letterSpacing: -0.5
-          )
-        ),
-      ],
-    );
-  }
-
   Widget _buildSectionHeader(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.orange.shade900),
-          const SizedBox(width: 8),
-          Text(
-            title,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.black87),
-          ),
-        ],
-      ),
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.orange.shade900),
+        const SizedBox(width: 8),
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+      ],
     );
   }
 
@@ -219,11 +251,7 @@ class _HomePageState extends State<HomePage> {
               selected: _selectedCategory == cat,
               onSelected: (_) => setState(() => _selectedCategory = cat),
               selectedColor: Colors.orange,
-              labelStyle: TextStyle(
-                color: _selectedCategory == cat ? Colors.white : Colors.orange,
-                fontWeight: FontWeight.bold,
-              ),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+              labelStyle: TextStyle(color: _selectedCategory == cat ? Colors.white : Colors.orange, fontWeight: FontWeight.bold),
               showCheckmark: false,
             ),
           );
@@ -236,16 +264,12 @@ class _HomePageState extends State<HomePage> {
     final allergens = {'gluten': '🍞 Gluten', 'süt': '🥛 Süt', 'et': '🥩 Et', 'şeker': '🍬 Şeker'};
     return Wrap(
       spacing: 8,
-      runSpacing: 8,
       children: allergens.entries.map((entry) {
         final isSelected = _excludedIngredients.contains(entry.key);
         return FilterChip(
           label: Text(entry.value),
           selected: isSelected,
           onSelected: (val) => setState(() => val ? _excludedIngredients.add(entry.key) : _excludedIngredients.remove(entry.key)),
-          selectedColor: Colors.orange.withOpacity(0.2),
-          checkmarkColor: Colors.orange,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         );
       }).toList(),
     );
@@ -255,34 +279,13 @@ class _HomePageState extends State<HomePage> {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(40),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(40),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.withOpacity(0.15),
-            blurRadius: 30,
-            offset: const Offset(0, 10),
-          )
-        ],
-      ),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(40), boxShadow: [BoxShadow(color: Colors.orange.withOpacity(0.1), blurRadius: 40)]),
       child: Column(
         children: [
-          Text(
-            _currentFood,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 30, 
-              fontWeight: FontWeight.w900, 
-              color: Colors.orange.shade900
-            ),
-          ),
+          Text(_currentFood, textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900, color: Colors.orange.shade900)),
           if (!_isSpinning && _currentDrink.isNotEmpty) ...[
             const Divider(height: 40),
-            Text(
-              _currentDrink, 
-              style: const TextStyle(fontSize: 18, color: Colors.blueGrey, fontWeight: FontWeight.w600)
-            ),
+            Text(_currentDrink, style: const TextStyle(fontSize: 18, color: Colors.blueGrey, fontWeight: FontWeight.w600)),
           ],
         ],
       ),
@@ -292,17 +295,8 @@ class _HomePageState extends State<HomePage> {
   Widget _buildPremiumButton() {
     return ElevatedButton(
       onPressed: _isSpinning ? null : _spinTheWheel,
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size(double.infinity, 75),
-        backgroundColor: Colors.orange,
-        elevation: 5,
-        shadowColor: Colors.orange.withOpacity(0.4),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      ),
-      child: const Text(
-        "🍔 Şansımı Dene", 
-        style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold)
-      ),
+      style: ElevatedButton.styleFrom(minimumSize: const Size(double.infinity, 75), backgroundColor: Colors.orange, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+      child: const Text("🍔 Şansımı Dene", style: TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold)),
     );
   }
 }
